@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Refinery Process Overview</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Smooth scrolling for the whole page */
+        html { scroll-behavior: smooth; }
+        /* Custom hover effects for SVG elements */
+        .unit-hover:hover { filter: brightness(1.2); cursor: pointer; }
+    </style>
+</head>
+<body class="bg-neutral-900 text-neutral-200 font-sans">
+
+    <div class="min-h-screen p-8">
+        <h1 class="text-4xl font-bold mb-4 text-center text-white">
+            Oil Refinery Process Overview
+        </h1>
+        <p class="max-w-4xl mx-auto text-center mb-10 text-neutral-400">
+            A conceptual overview of how crude oil is processed through major refinery units
+            to produce usable fuels and products. Click a unit to learn more.
+        </p>
+
+        <div class="flex justify-center mb-20 overflow-x-auto">
+            <svg width="800" height="550" viewBox="0 0 800 550" xmlns="http://www.w3.org/2000/svg" class="drop-shadow-xl">
+                <defs>
+                    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto">
+                        <polygon points="0 0, 10 5, 0 10" fill="#e5e5e5" />
+                    </marker>
+                </defs>
+
+                <g onclick="document.getElementById('distillation').scrollIntoView();" class="unit-hover">
+                    <rect x="50" y="50" width="120" height="300" rx="10" fill="#334155" stroke="#e5e5e5" stroke-width="2" />
+                    <text x="110" y="200" text-anchor="middle" font-size="14" fill="#fff" transform="rotate(-90 110,200)">Distillation</text>
+                </g>
+
+                <g onclick="document.getElementById('vacuum').scrollIntoView();" class="unit-hover">
+                    <rect x="50" y="380" width="120" height="120" rx="10" fill="#334155" stroke="#e5e5e5" stroke-width="2" />
+                    <text x="110" y="445" text-anchor="middle" font-size="14" fill="#fff">Vacuum</text>
+                </g>
+
+                <g onclick="document.getElementById('hydrotreating').scrollIntoView();" class="unit-hover">
+                    <rect x="300" y="80" width="160" height="50" rx="8" fill="#3f3cbb" stroke="#e5e5e5" />
+                    <text x="380" y="110" text-anchor="middle" fill="#fff" font-size="14">Hydrotreater</text>
+                </g>
+
+                <g onclick="document.getElementById('fcc').scrollIntoView();" class="unit-hover">
+                    <rect x="300" y="160" width="160" height="50" rx="8" fill="#3f3cbb" stroke="#e5e5e5" />
+                    <text x="380" y="190" text-anchor="middle" fill="#fff" font-size="14">FCC</text>
+                </g>
+
+                <g onclick="document.getElementById('hydrocracker').scrollIntoView();" class="unit-hover">
+                    <rect x="300" y="240" width="160" height="50" rx="8" fill="#3f3cbb" stroke="#e5e5e5" />
+                    <text x="380" y="270" text-anchor="middle" fill="#fff" font-size="14">Hydrocracker</text>
+                </g>
+
+                <g onclick="document.getElementById('coker').scrollIntoView();" class="unit-hover">
+                    <rect x="300" y="415" width="160" height="50" rx="8" fill="#7c2d12" stroke="#e5e5e5" />
+                    <text x="380" y="445" text-anchor="middle" fill="#fff" font-size="14">Coker</text>
+                </g>
+
+                <line x1="170" y1="105" x2="300" y2="105" stroke="#e5e5e5" stroke-width="2" marker-end="url(#arrow)" />
+                <line x1="170" y1="185" x2="300" y2="185" stroke="#e5e5e5" stroke-width="2" marker-end="url(#arrow)" />
+                <line x1="170" y1="265" x2="300" y2="265" stroke="#e5e5e5" stroke-width="2" marker-end="url(#arrow)" />
+                <line x1="170" y1="340" x2="110" y2="380" stroke="#e5e5e5" stroke-width="2" marker-end="url(#arrow)" /> <line x1="170" y1="440" x2="300" y2="440" stroke="#e5e5e5" stroke-width="2" marker-end="url(#arrow)" /> </svg>
+        </div>
+
+        <div class="max-w-4xl mx-auto space-y-20 pb-20">
+            
+            <section id="distillation" class="border-t border-neutral-700 pt-10">
+                <h2 class="text-3xl font-semibold mb-4 text-white">Distillation Tower</h2>
+                <p class="text-neutral-300 mb-4 text-lg">
+                    The distillation tower is the primary separation unit in a refinery. Crude oil is heated in a furnace and introduced into the column, where vapor–liquid equilibrium enables separation based on boiling point differences.
+                </p>
+                <h3 class="text-xl font-semibold text-white mt-6 mb-2">Products</h3>
+                <ul class="list-disc list-inside text-neutral-400 space-y-1 ml-4">
+                    <li>Fuel gas and LPG</li>
+                    <li>Naphtha</li>
+                    <li>Kerosene / Jet Fuel</li>
+                    <li>Atmospheric Gas Oil</li>
+                    <li>Atmospheric Residue</li>
+                </ul>
+            </section>
+
+            <section id="vacuum" class="border-t border-neutral-700 pt-10">
+                <h2 class="text-3xl font-semibold mb-4 text-white">Vacuum Distillation Unit</h2>
+                <p class="text-neutral-300 mb-4 text-lg">
+                    The vacuum distillation unit (VDU) processes atmospheric residue under reduced pressure (vacuum) to recover valuable heavy gas oils while minimizing thermal cracking.
+                </p>
+                <h3 class="text-xl font-semibold text-white mt-6 mb-2">Process Role</h3>
+                <p class="text-neutral-300 mb-4">
+                    Extends crude utilization by separating heavy fractions that would otherwise be unsuitable for direct use.
+                </p>
+            </section>
+
+            <section id="hydrotreating" class="border-t border-neutral-700 pt-10">
+                <h2 class="text-3xl font-semibold mb-4 text-white">Hydrotreating</h2>
+                <p class="text-neutral-300 mb-4 text-lg">
+                    Hydrotreating units chemically treat refinery streams with hydrogen over a catalyst to remove impurities like sulfur, nitrogen, and metals.
+                </p>
+                <h3 class="text-xl font-semibold text-white mt-6 mb-2">Key Reaction</h3>
+                <p class="text-neutral-300 italic">R-S-R + 2H₂ → 2R-H + H₂S</p>
+            </section>
+
+            <section id="fcc" class="border-t border-neutral-700 pt-10">
+                <h2 class="text-3xl font-semibold mb-4 text-white">Fluid Catalytic Cracking (FCC)</h2>
+                <p class="text-neutral-300 mb-4 text-lg">
+                    The FCC is the "workhorse" of the refinery. It breaks heavy gas oils into lighter, high-value products like gasoline and propylene using a fluidized catalyst.
+                </p>
+                <h3 class="text-xl font-semibold text-white mt-6 mb-2">Conceptual Operation</h3>
+                <p class="text-neutral-300 mb-4">
+                    Preheated feed contacts hot catalyst in the riser. Carbon (coke) deposits on the catalyst during the reaction. The spent catalyst is sent to a regenerator where the coke is burned off, providing the heat for the process.
+                </p>
+            </section>
+
+            <section id="hydrocracker" class="border-t border-neutral-700 pt-10">
+                <h2 class="text-3xl font-semibold mb-4 text-white">Hydrocracker</h2>
+                <p class="text-neutral-300 mb-4 text-lg">
+                    Hydrocrackers use high pressure hydrogen and catalyst to crack heavy feeds into diesel, jet fuel, and naphtha with very low sulfur content.
+                </p>
+            </section>
+
+            <section id="coker" class="border-t border-neutral-700 pt-10">
+                <h2 class="text-3xl font-semibold mb-4 text-white">Delayed Coking</h2>
+                <p class="text-neutral-300 mb-4 text-lg">
+                    A severe thermal cracking process used on the heaviest residues. It "squeezes" the last liquid products out of the barrel, leaving behind solid petroleum coke.
+                </p>
+            </section>
+
+            <section id="references" class="border-t border-neutral-700 pt-10 pb-20">
+                <h2 class="text-2xl font-semibold mb-2 text-white">References</h2>
+                <ul class="list-disc list-inside text-neutral-400 ml-4">
+                    <li>Gary, Handwerk & Kaiser – Petroleum Refining: Technology and Economics</li>
+                    <li>Speight – The Chemistry and Technology of Petroleum</li>
+                </ul>
+            </section>
+        </div>
+    </div>
+</body>
+</html>
