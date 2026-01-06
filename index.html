@@ -133,7 +133,7 @@
         </div>
     </div>
 
-    <script>
+<script>
         // 1. DATA DEFINITIONS
         const unitData = {
             distillation: {
@@ -146,9 +146,6 @@
                         <li><strong>Pressure:</strong> Near Atmospheric</li>
                         <li><strong>Internals:</strong> 20-50 Trays</li>
                     </ul>
-                    <div class="bg-slate-700 p-4 rounded mt-6 border-l-4 border-blue-500">
-                        <p class="text-sm italic">"The cut point between Naphtha and Kerosene is a critical control variable for managing refinery gasoline pool volume."</p>
-                    </div>
                 `
             },
             vacuum: {
@@ -212,7 +209,6 @@
             modal.classList.remove('active');
         }
 
-        // Close modal if clicking outside the content panel
         modal.addEventListener('click', (e) => {
             if (e.target === modal) closeModal();
         });
@@ -227,29 +223,38 @@
         const flowGasoline = document.getElementById('flow-gasoline');
         const flowCoke = document.getElementById('flow-coke');
         const flowCrude = document.getElementById('flow-crude');
-
-        // Base Ratios (simplified engineering approximations)
-        // LPG: 5.2%, Diesel: 32%, Gasoline: 45.5%, Coke: 0.8% (mass approx scaled to units)
         
+        // Get all flow lines for animation control
+        const flowLines = document.querySelectorAll('.flow-line');
+
         function updateSimulation() {
             const feedRate = parseFloat(slider.value);
             
-            // Update Feed Display
+            // 1. Update Text Numbers
             feedDisplay.innerText = feedRate;
             flowCrude.innerText = feedRate + " kBPD";
 
-            // Calculate Products
-            // Using toFixed(1) for cleaner numbers
+            // Mass Balance Calculations
             flowLPG.innerText = (feedRate * 0.052).toFixed(1) + " kBPD";
             flowDiesel.innerText = (feedRate * 0.32).toFixed(1) + " kBPD";
             flowGasoline.innerText = (feedRate * 0.455).toFixed(1) + " kBPD";
-            
-            // Coke is usually tons/day, let's assume a factor
             flowCoke.innerText = (feedRate * 8).toFixed(0) + " T/D";
+
+            // 2. Update Animation Speed (Visual Feedback)
+            // Base speed is 3s at 100kBPD. Higher rate = lower duration (faster).
+            const baseSpeed = 3; 
+            const newSpeed = baseSpeed * (100 / feedRate);
+            
+            flowLines.forEach(line => {
+                line.style.animationDuration = `${newSpeed}s`;
+            });
         }
 
         // Attach listener
         slider.addEventListener('input', updateSimulation);
+        
+        // Run once on load to initialize correct values
+        updateSimulation(); 
 
     </script>
 </body>
