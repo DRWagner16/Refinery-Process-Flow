@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Interactive Refinery Process</title>
+    <title>Refinery Process Simulator</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         html { scroll-behavior: smooth; }
         
-        /* Flow Animation */
+        /* Flow Animation - The "dashed" effect */
         .flow-line {
             stroke-dasharray: 10;
             animation: dash 3s linear infinite;
@@ -133,129 +133,131 @@
         </div>
     </div>
 
-<script>
-        // 1. DATA DEFINITIONS
-        const unitData = {
-            distillation: {
-                title: "Atmospheric Distillation",
-                content: `
-                    <p>The distillation tower is the primary separation unit. It separates crude oil into fractions based on boiling point.</p>
-                    <h3 class="text-xl text-white mt-4 font-semibold">Key Parameters</h3>
-                    <ul class="list-disc ml-5 mt-2 space-y-1">
-                        <li><strong>Feed Temp:</strong> ~350°C (660°F)</li>
-                        <li><strong>Pressure:</strong> Near Atmospheric</li>
-                        <li><strong>Internals:</strong> 20-50 Trays</li>
-                    </ul>
-                `
-            },
-            vacuum: {
-                title: "Vacuum Distillation",
-                content: `
-                    <p>Processes atmospheric residue under vacuum to recover heavy gas oils without thermal cracking.</p>
-                    <h3 class="text-xl text-white mt-4 font-semibold">Yields</h3>
-                    <ul class="list-disc ml-5 mt-2 space-y-1">
-                        <li>Light Vacuum Gas Oil (LVGO)</li>
-                        <li>Heavy Vacuum Gas Oil (HVGO)</li>
-                        <li>Vacuum Residue (Asphalt/Coker Feed)</li>
-                    </ul>
-                `
-            },
-            fcc: {
-                title: "Fluid Catalytic Cracking",
-                content: `
-                    <p>The FCC upgrades heavy gas oils into high-octane gasoline and light olefins using a zeolite catalyst.</p>
-                    <h3 class="text-xl text-white mt-4 font-semibold">Reaction Chemistry</h3>
-                    <p class="mt-2">Large paraffin molecules are cracked into smaller paraffins and olefins. Carbon (coke) deposits on the catalyst and is burned off in the regenerator.</p>
-                `
-            },
-            hydrotreater: {
-                title: "Hydrotreating (Naphtha/Diesel)",
-                content: `
-                    <p>Removes sulfur (desulfurization) and nitrogen (denitrification) using hydrogen and catalyst (CoMo or NiMo).</p>
-                    <p class="mt-2">Essential for meeting environmental fuel specifications (e.g., ULSD < 15ppm sulfur).</p>
-                `
-            },
-            coker: {
-                title: "Delayed Coking",
-                content: `
-                    <p>A severe thermal cracking process that converts vacuum residue into lighter products and solid petroleum coke.</p>
-                    <h3 class="text-xl text-white mt-4 font-semibold">Cycle</h3>
-                    <p class="mt-2">The process is semi-continuous. While one drum is filling (coking), the other is being decoked using high-pressure water jets.</p>
-                `
-            },
-            gasplant: {
-                title: "Saturate Gas Plant",
-                content: `
-                    <p>Separates light ends (C1-C4) into Fuel Gas, Ethane, Propane, and Butane.</p>
-                `
-            }
-        };
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 1. DATA DEFINITIONS
+            const unitData = {
+                distillation: {
+                    title: "Atmospheric Distillation",
+                    content: `
+                        <p>The distillation tower is the primary separation unit. It separates crude oil into fractions based on boiling point.</p>
+                        <h3 class="text-xl text-white mt-4 font-semibold">Key Parameters</h3>
+                        <ul class="list-disc ml-5 mt-2 space-y-1">
+                            <li><strong>Feed Temp:</strong> ~350°C (660°F)</li>
+                            <li><strong>Pressure:</strong> Near Atmospheric</li>
+                            <li><strong>Internals:</strong> 20-50 Trays</li>
+                        </ul>
+                    `
+                },
+                vacuum: {
+                    title: "Vacuum Distillation",
+                    content: `
+                        <p>Processes atmospheric residue under vacuum to recover heavy gas oils without thermal cracking.</p>
+                        <h3 class="text-xl text-white mt-4 font-semibold">Yields</h3>
+                        <ul class="list-disc ml-5 mt-2 space-y-1">
+                            <li>Light Vacuum Gas Oil (LVGO)</li>
+                            <li>Heavy Vacuum Gas Oil (HVGO)</li>
+                            <li>Vacuum Residue (Asphalt/Coker Feed)</li>
+                        </ul>
+                    `
+                },
+                fcc: {
+                    title: "Fluid Catalytic Cracking",
+                    content: `
+                        <p>The FCC upgrades heavy gas oils into high-octane gasoline and light olefins using a zeolite catalyst.</p>
+                        <h3 class="text-xl text-white mt-4 font-semibold">Reaction Chemistry</h3>
+                        <p class="mt-2">Large paraffin molecules are cracked into smaller paraffins and olefins. Carbon (coke) deposits on the catalyst and is burned off in the regenerator.</p>
+                    `
+                },
+                hydrotreater: {
+                    title: "Hydrotreating (Naphtha/Diesel)",
+                    content: `
+                        <p>Removes sulfur (desulfurization) and nitrogen (denitrification) using hydrogen and catalyst (CoMo or NiMo).</p>
+                        <p class="mt-2">Essential for meeting environmental fuel specifications (e.g., ULSD < 15ppm sulfur).</p>
+                    `
+                },
+                coker: {
+                    title: "Delayed Coking",
+                    content: `
+                        <p>A severe thermal cracking process that converts vacuum residue into lighter products and solid petroleum coke.</p>
+                        <h3 class="text-xl text-white mt-4 font-semibold">Cycle</h3>
+                        <p class="mt-2">The process is semi-continuous. While one drum is filling (coking), the other is being decoked using high-pressure water jets.</p>
+                    `
+                },
+                gasplant: {
+                    title: "Saturate Gas Plant",
+                    content: `
+                        <p>Separates light ends (C1-C4) into Fuel Gas, Ethane, Propane, and Butane.</p>
+                    `
+                }
+            };
 
-        // 2. MODAL FUNCTIONS
-        const modal = document.getElementById('info-modal');
-        const modalTitle = document.getElementById('modal-title');
-        const modalContent = document.getElementById('modal-content');
+            // 2. MODAL FUNCTIONS
+            const modal = document.getElementById('info-modal');
+            const modalTitle = document.getElementById('modal-title');
+            const modalContent = document.getElementById('modal-content');
 
-        function openModal(unitId) {
-            const data = unitData[unitId];
-            if (data) {
-                modalTitle.innerText = data.title;
-                modalContent.innerHTML = data.content;
-                modal.classList.add('active');
-            }
-        }
+            window.openModal = function(unitId) {
+                const data = unitData[unitId];
+                if (data) {
+                    modalTitle.textContent = data.title;
+                    modalContent.innerHTML = data.content;
+                    modal.classList.add('active');
+                }
+            };
 
-        function closeModal() {
-            modal.classList.remove('active');
-        }
+            window.closeModal = function() {
+                modal.classList.remove('active');
+            };
 
-        modal.addEventListener('click', (e) => {
-            if (e.target === modal) closeModal();
-        });
-
-        // 3. SIMULATION LOGIC (Gamification)
-        const slider = document.getElementById('feed-slider');
-        const feedDisplay = document.getElementById('feed-display');
-        
-        // Output elements
-        const flowLPG = document.getElementById('flow-lpg');
-        const flowDiesel = document.getElementById('flow-diesel');
-        const flowGasoline = document.getElementById('flow-gasoline');
-        const flowCoke = document.getElementById('flow-coke');
-        const flowCrude = document.getElementById('flow-crude');
-        
-        // Get all flow lines for animation control
-        const flowLines = document.querySelectorAll('.flow-line');
-
-        function updateSimulation() {
-            const feedRate = parseFloat(slider.value);
-            
-            // 1. Update Text Numbers
-            feedDisplay.innerText = feedRate;
-            flowCrude.innerText = feedRate + " kBPD";
-
-            // Mass Balance Calculations
-            flowLPG.innerText = (feedRate * 0.052).toFixed(1) + " kBPD";
-            flowDiesel.innerText = (feedRate * 0.32).toFixed(1) + " kBPD";
-            flowGasoline.innerText = (feedRate * 0.455).toFixed(1) + " kBPD";
-            flowCoke.innerText = (feedRate * 8).toFixed(0) + " T/D";
-
-            // 2. Update Animation Speed (Visual Feedback)
-            // Base speed is 3s at 100kBPD. Higher rate = lower duration (faster).
-            const baseSpeed = 3; 
-            const newSpeed = baseSpeed * (100 / feedRate);
-            
-            flowLines.forEach(line => {
-                line.style.animationDuration = `${newSpeed}s`;
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) closeModal();
             });
-        }
 
-        // Attach listener
-        slider.addEventListener('input', updateSimulation);
-        
-        // Run once on load to initialize correct values
-        updateSimulation(); 
+            // 3. SIMULATION LOGIC (Gamification)
+            const slider = document.getElementById('feed-slider');
+            const feedDisplay = document.getElementById('feed-display');
+            
+            // Output elements
+            const flowLPG = document.getElementById('flow-lpg');
+            const flowDiesel = document.getElementById('flow-diesel');
+            const flowGasoline = document.getElementById('flow-gasoline');
+            const flowCoke = document.getElementById('flow-coke');
+            const flowCrude = document.getElementById('flow-crude');
+            const flowLines = document.querySelectorAll('.flow-line');
 
+            function updateSimulation() {
+                const feedRate = parseFloat(slider.value);
+                
+                // Update text displays
+                if(feedDisplay) feedDisplay.textContent = feedRate;
+                if(flowCrude) flowCrude.textContent = feedRate + " kBPD";
+
+                // Calculations
+                if(flowLPG) flowLPG.textContent = (feedRate * 0.052).toFixed(1) + " kBPD";
+                if(flowDiesel) flowDiesel.textContent = (feedRate * 0.32).toFixed(1) + " kBPD";
+                if(flowGasoline) flowGasoline.textContent = (feedRate * 0.455).toFixed(1) + " kBPD";
+                if(flowCoke) flowCoke.textContent = (feedRate * 8).toFixed(0) + " T/D";
+
+                // Update Animation Speed (Visual Feedback)
+                // Base speed is 3s at 100kBPD. Higher rate = lower duration (faster).
+                const baseSpeed = 3; 
+                const newSpeed = baseSpeed * (100 / feedRate);
+                
+                flowLines.forEach(line => {
+                    line.style.animationDuration = `${newSpeed}s`;
+                });
+            }
+
+            // Attach listener
+            if (slider) {
+                slider.addEventListener('input', updateSimulation);
+                // Initialize
+                updateSimulation();
+            } else {
+                console.error("Slider element not found!");
+            }
+        });
     </script>
 </body>
 </html>
