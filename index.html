@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Refinery Process</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        html { scroll-behavior: smooth; }
+        
+        /* Flow Animation */
+        .flow-line {
+            stroke-dasharray: 10;
+            animation: dash 3s linear infinite;
+        }
+        @keyframes dash {
+            to { stroke-dashoffset: -20; }
+        }
+
+        /* Unit Hover Effects */
+        .unit-group:hover rect {
+            stroke: #fff;
+            stroke-width: 3px;
+            filter: drop-shadow(0 0 8px rgba(59, 130, 246, 0.5));
+            cursor: pointer;
+        }
+
+        /* Modal Transition */
+        .modal {
+            transition: opacity 0.3s ease-in-out;
+            opacity: 0;
+            pointer-events: none;
+        }
+        .modal.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+    </style>
+</head>
+<body class="bg-slate-900 text-slate-200 font-sans h-screen flex flex-col overflow-hidden">
+
+    <header class="bg-slate-800 p-4 shadow-md z-10 flex justify-between items-center border-b border-slate-700">
+        <div>
+            <h1 class="text-2xl font-bold text-white">Refinery Process Simulator</h1>
+            <p class="text-sm text-slate-400">Interactive PFD: Adjust feed rates and click units for details.</p>
+        </div>
+        
+        <div class="bg-slate-700 p-3 rounded-lg flex items-center gap-4 border border-slate-600">
+            <div class="text-right">
+                <label class="block text-xs uppercase font-bold text-slate-400">Crude Feed Rate</label>
+                <span id="feed-display" class="text-xl font-mono text-green-400">100</span> <span class="text-xs">kBPD</span>
+            </div>
+            <input type="range" id="feed-slider" min="50" max="200" value="100" step="10" 
+                   class="w-32 h-2 bg-slate-600 rounded-lg appearance-none cursor-pointer accent-blue-500">
+        </div>
+    </header>
+
+    <div class="flex flex-1 overflow-hidden relative">
+        
+        <div class="flex-1 overflow-auto flex justify-center items-center bg-slate-900 relative" id="canvas-container">
+            
+            <svg width="900" height="600" viewBox="0 0 900 600" xmlns="http://www.w3.org/2000/svg" class="select-none">
+                <defs>
+                    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto">
+                        <polygon points="0 0, 10 5, 0 10" fill="#64748b" />
+                    </marker>
+                </defs>
+
+                <path d="M 50 200 L 150 200" stroke="#64748b" stroke-width="3" fill="none" class="flow-line" />
+                <text x="80" y="190" fill="#94a3b8" font-size="12" font-family="monospace" id="flow-crude">100 kBPD</text>
+
+                <path d="M 210 100 L 350 100" stroke="#64748b" stroke-width="2" fill="none" marker-end="url(#arrow)" class="flow-line" />
+                
+                <path d="M 210 200 L 350 200" stroke="#64748b" stroke-width="2" fill="none" marker-end="url(#arrow)" class="flow-line" />
+                
+                <path d="M 210 300 L 350 300" stroke="#64748b" stroke-width="2" fill="none" marker-end="url(#arrow)" class="flow-line" />
+
+                <path d="M 210 400 L 210 450 L 150 450" stroke="#64748b" stroke-width="2" fill="none" marker-end="url(#arrow)" class="flow-line" />
+
+                <path d="M 270 500 L 350 500" stroke="#64748b" stroke-width="2" fill="none" marker-end="url(#arrow)" class="flow-line" />
+
+                <g class="unit-group" onclick="openModal('distillation')">
+                    <rect x="150" y="80" width="120" height="340" rx="8" fill="#1e293b" stroke="#3b82f6" stroke-width="2" />
+                    <text x="210" y="250" text-anchor="middle" fill="#e2e8f0" font-weight="bold" transform="rotate(-90 210,250)">Atm. Distillation</text>
+                    <rect x="160" y="380" width="100" height="24" rx="4" fill="#0f172a" opacity="0.8"/>
+                    <text x="210" y="396" text-anchor="middle" fill="#4ade80" font-family="monospace" font-size="12" id="temp-adu">350°C</text>
+                </g>
+
+                <g class="unit-group" onclick="openModal('vacuum')">
+                    <rect x="150" y="450" width="120" height="120" rx="8" fill="#1e293b" stroke="#3b82f6" stroke-width="2" />
+                    <text x="210" y="515" text-anchor="middle" fill="#e2e8f0" font-weight="bold">Vacuum</text>
+                </g>
+
+                <g class="unit-group" onclick="openModal('gasplant')">
+                    <rect x="350" y="80" width="140" height="60" rx="8" fill="#334155" stroke="#94a3b8" stroke-width="2" />
+                    <text x="420" y="115" text-anchor="middle" fill="#e2e8f0" font-weight="bold">Gas Plant</text>
+                    <text x="510" y="115" fill="#4ade80" font-family="monospace" font-size="12" id="flow-lpg">5.2 kBPD</text>
+                </g>
+
+                <g class="unit-group" onclick="openModal('hydrotreater')">
+                    <rect x="350" y="170" width="140" height="60" rx="8" fill="#334155" stroke="#94a3b8" stroke-width="2" />
+                    <text x="420" y="205" text-anchor="middle" fill="#e2e8f0" font-weight="bold">Hydrotreater</text>
+                    <text x="510" y="205" fill="#4ade80" font-family="monospace" font-size="12" id="flow-diesel">32.0 kBPD</text>
+                </g>
+
+                <g class="unit-group" onclick="openModal('fcc')">
+                    <rect x="350" y="270" width="140" height="80" rx="8" fill="#334155" stroke="#94a3b8" stroke-width="2" />
+                    <text x="420" y="315" text-anchor="middle" fill="#e2e8f0" font-weight="bold">FCC</text>
+                    <text x="510" y="315" fill="#4ade80" font-family="monospace" font-size="12" id="flow-gasoline">45.5 kBPD</text>
+                </g>
+
+                <g class="unit-group" onclick="openModal('coker')">
+                    <rect x="350" y="480" width="140" height="60" rx="8" fill="#451a03" stroke="#f97316" stroke-width="2" />
+                    <text x="420" y="515" text-anchor="middle" fill="#e2e8f0" font-weight="bold">Coker</text>
+                    <text x="510" y="515" fill="#4ade80" font-family="monospace" font-size="12" id="flow-coke">800 T/D</text>
+                </g>
+
+            </svg>
+        </div>
+
+        <div id="info-modal" class="modal absolute inset-0 bg-slate-900/90 backdrop-blur-sm flex justify-end">
+            <div class="w-full md:w-1/3 h-full bg-slate-800 border-l border-slate-700 p-8 shadow-2xl overflow-y-auto transform transition-transform duration-300 translate-x-0">
+                <button onclick="closeModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white">
+                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+                
+                <h2 id="modal-title" class="text-3xl font-bold text-blue-400 mb-2">Unit Name</h2>
+                <div class="h-1 w-20 bg-blue-500 mb-6"></div>
+                
+                <div id="modal-content" class="text-slate-300 space-y-4 leading-relaxed">
+                    </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 1. DATA DEFINITIONS
+        const unitData = {
+            distillation: {
+                title: "Atmospheric Distillation",
+                content: `
+                    <p>The distillation tower is the primary separation unit. It separates crude oil into fractions based on boiling point.</p>
+                    <h3 class="text-xl text-white mt-4 font-semibold">Key Parameters</h3>
+                    <ul class="list-disc ml-5 mt-2 space-y-1">
+                        <li><strong>Feed Temp:</strong> ~350°C (660°F)</li>
+                        <li><strong>Pressure:</strong> Near Atmospheric</li>
+                        <li><strong>Internals:</strong> 20-50 Trays</li>
+                    </ul>
+                    <div class="bg-slate-700 p-4 rounded mt-6 border-l-4 border-blue-500">
+                        <p class="text-sm italic">"The cut point between Naphtha and Kerosene is a critical control variable for managing refinery gasoline pool volume."</p>
+                    </div>
+                `
+            },
+            vacuum: {
+                title: "Vacuum Distillation",
+                content: `
+                    <p>Processes atmospheric residue under vacuum to recover heavy gas oils without thermal cracking.</p>
+                    <h3 class="text-xl text-white mt-4 font-semibold">Yields</h3>
+                    <ul class="list-disc ml-5 mt-2 space-y-1">
+                        <li>Light Vacuum Gas Oil (LVGO)</li>
+                        <li>Heavy Vacuum Gas Oil (HVGO)</li>
+                        <li>Vacuum Residue (Asphalt/Coker Feed)</li>
+                    </ul>
+                `
+            },
+            fcc: {
+                title: "Fluid Catalytic Cracking",
+                content: `
+                    <p>The FCC upgrades heavy gas oils into high-octane gasoline and light olefins using a zeolite catalyst.</p>
+                    <h3 class="text-xl text-white mt-4 font-semibold">Reaction Chemistry</h3>
+                    <p class="mt-2">Large paraffin molecules are cracked into smaller paraffins and olefins. Carbon (coke) deposits on the catalyst and is burned off in the regenerator.</p>
+                `
+            },
+            hydrotreater: {
+                title: "Hydrotreating (Naphtha/Diesel)",
+                content: `
+                    <p>Removes sulfur (desulfurization) and nitrogen (denitrification) using hydrogen and catalyst (CoMo or NiMo).</p>
+                    <p class="mt-2">Essential for meeting environmental fuel specifications (e.g., ULSD < 15ppm sulfur).</p>
+                `
+            },
+            coker: {
+                title: "Delayed Coking",
+                content: `
+                    <p>A severe thermal cracking process that converts vacuum residue into lighter products and solid petroleum coke.</p>
+                    <h3 class="text-xl text-white mt-4 font-semibold">Cycle</h3>
+                    <p class="mt-2">The process is semi-continuous. While one drum is filling (coking), the other is being decoked using high-pressure water jets.</p>
+                `
+            },
+            gasplant: {
+                title: "Saturate Gas Plant",
+                content: `
+                    <p>Separates light ends (C1-C4) into Fuel Gas, Ethane, Propane, and Butane.</p>
+                `
+            }
+        };
+
+        // 2. MODAL FUNCTIONS
+        const modal = document.getElementById('info-modal');
+        const modalTitle = document.getElementById('modal-title');
+        const modalContent = document.getElementById('modal-content');
+
+        function openModal(unitId) {
+            const data = unitData[unitId];
+            if (data) {
+                modalTitle.innerText = data.title;
+                modalContent.innerHTML = data.content;
+                modal.classList.add('active');
+            }
+        }
+
+        function closeModal() {
+            modal.classList.remove('active');
+        }
+
+        // Close modal if clicking outside the content panel
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) closeModal();
+        });
+
+        // 3. SIMULATION LOGIC (Gamification)
+        const slider = document.getElementById('feed-slider');
+        const feedDisplay = document.getElementById('feed-display');
+        
+        // Output elements
+        const flowLPG = document.getElementById('flow-lpg');
+        const flowDiesel = document.getElementById('flow-diesel');
+        const flowGasoline = document.getElementById('flow-gasoline');
+        const flowCoke = document.getElementById('flow-coke');
+        const flowCrude = document.getElementById('flow-crude');
+
+        // Base Ratios (simplified engineering approximations)
+        // LPG: 5.2%, Diesel: 32%, Gasoline: 45.5%, Coke: 0.8% (mass approx scaled to units)
+        
+        function updateSimulation() {
+            const feedRate = parseFloat(slider.value);
+            
+            // Update Feed Display
+            feedDisplay.innerText = feedRate;
+            flowCrude.innerText = feedRate + " kBPD";
+
+            // Calculate Products
+            // Using toFixed(1) for cleaner numbers
+            flowLPG.innerText = (feedRate * 0.052).toFixed(1) + " kBPD";
+            flowDiesel.innerText = (feedRate * 0.32).toFixed(1) + " kBPD";
+            flowGasoline.innerText = (feedRate * 0.455).toFixed(1) + " kBPD";
+            
+            // Coke is usually tons/day, let's assume a factor
+            flowCoke.innerText = (feedRate * 8).toFixed(0) + " T/D";
+        }
+
+        // Attach listener
+        slider.addEventListener('input', updateSimulation);
+
+    </script>
+</body>
+</html>
